@@ -1,0 +1,54 @@
+/*
+  HifzAI design tokens
+  Palette inspired by classical mushaf illumination: parchment paper,
+  deep manuscript teal, illumination gold, and maroon binding-leather accent.
+*/
+:root {
+  /* Surface */
+  --color-paper: #faf3e4;       /* warm parchment page */
+  --color-paper-dim: #f1e8d6;   /* recessed panels, inset cards */
+
+  /* Text */
+  --color-ink: #16302b;         /* primary text, near-black manuscript green */
+  --color-ink-soft: #4b5f59;    /* secondary text */
+
+  /* Brand */
+  --color-teal: #0f5c4e;        /* primary accent — manuscript teal */
+  --color-teal-dark: #0a3c33;   /* pressed / hover state */
+
+  /* Accents */
+  --color-gold: #c08a28;        /* illumination gold — progress, highlights */
+  --color-maroon: #7a2b34;      /* streaks, alerts, binding-leather accent */
+  --color-sage: #e4e9de;        /* quiet secondary surface */
+
+  --radius-card: 1.25rem;
+}
+
+/*
+ * Self-hosted Arabic typefaces — intentionally NOT active right now.
+ * Amiri + Scheherazade New are loaded from Google Fonts in index.html as a
+ * working default. If you add real files to /public/fonts (see its
+ * README), uncomment these @font-face rules AND remove the Google Fonts
+ * <link> entries for Amiri/Scheherazade New in index.html — leaving both
+ * active at once causes the failing local @font-face to win the cascade
+ * and silently break Arabic rendering back to a generic serif.
+ *
+ * @font-face {
+ *   font-family: 'Amiri';
+ *   src: url('/fonts/Amiri-Regular.woff2') format('woff2');
+ *   font-weight: 400;
+ *   font-display: swap;
+ * }
+ * @font-face {
+ *   font-family: 'Amiri';
+ *   src: url('/fonts/Amiri-Bold.woff2') format('woff2');
+ *   font-weight: 700;
+ *   font-display: swap;
+ * }
+ * @font-face {
+ *   font-family: 'Scheherazade New';
+ *   src: url('/fonts/ScheherazadeNew-Regular.woff2') format('woff2');
+ *   font-weight: 400;
+ *   font-display: swap;
+ * }
+ */

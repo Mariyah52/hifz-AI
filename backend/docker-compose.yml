@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hifzai
+      POSTGRES_PASSWORD: hifzai
+      POSTGRES_DB: hifzai
+    ports:
+      - "5432:5432"
+    volumes:
+      - hifzai_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hifzai"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://hifzai:hifzai@db:5432/hifzai
+      JWT_SECRET: change-this-to-a-random-secret-in-production
+      CORS_ORIGINS: http://localhost:5173
+      FRONTEND_URL: http://localhost:5173
+      MEDIA_ROOT: /app/media
+    ports:
+      - "8000:8000"
+    volumes:
+      - hifzai_media:/app/media
+
+volumes:
+  hifzai_pgdata:
+  hifzai_media:
