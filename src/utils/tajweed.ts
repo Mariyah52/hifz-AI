@@ -73,7 +73,7 @@ const TAG_RE = /<tajweed class=(?:"([^"]*)"|'([^']*)'|([^\s>]*))[^>]*>([^<]*)<\/
 
 /** Strips all `<tajweed>` markup down to plain text — used wherever exact ayah text is needed (Bismillah detection, playback, etc.), never for display. */
 export function stripTajweedTags(text: string): string {
-  return text.replace(TAG_RE, (_m, a, b, c, content) => content).replace(/<\/?tajweed[^>]*>/g, '');
+  return text.replace(TAG_RE, (_m, _a, _b, _c, content) => content).replace(/<\/?tajweed[^>]*>/g, '');
 }
 
 /** Splits raw tajweed-tagged API text into plain/colored runs, in order, ready to render as spans. */
