@@ -28,8 +28,10 @@ export interface RegisterInput {
   role: UserRole;
   classId?: string;
   childStudentId?: string;
-  /** Required — every account belongs to an organization now (Phase 18). */
-  organizationSlug: string;
+  /** Required unless role === 'admin' — the code for the existing institution being joined. */
+  organizationSlug?: string;
+  /** Required when role === 'admin' — creates a brand-new institution instead of joining one. */
+  organizationName?: string;
 }
 
 function toAuthUser(res: TokenResponse): AuthUser {

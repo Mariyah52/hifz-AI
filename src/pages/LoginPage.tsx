@@ -9,7 +9,6 @@ import { ApiError } from '@/services/apiClient';
 import type { UserRole } from '@/types/user';
 
 type Mode = 'login' | 'register';
-type RegisterableRole = Exclude<UserRole, 'admin'>;
 
 const inputClass =
   'rounded-lg border border-ink/10 bg-paper-dim px-3 py-2 font-body text-sm text-ink w-full';
@@ -23,8 +22,9 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState<RegisterableRole>('student');
+  const [role, setRole] = useState<UserRole>('student');
   const [organizationSlug, setOrganizationSlug] = useState('');
+  const [organizationName, setOrganizationName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +38,11 @@ export function LoginPage() {
       const user =
         mode === 'login'
           ? await login({ email, password, staySignedIn })
-          : await register({ email, password, name, role, organizationSlug });
+          : await register(
+              role === 'admin'
+                ? { email, password, name, role, organizationName }
+                : { email, password, name, role, organizationSlug },
+            );
 
       const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname;
       navigate(from ?? homeRouteForRole(user.role), { replace: true });
@@ -132,17 +136,35 @@ export function LoginPage() {
                 I am a
                 <select
                   value={role}
-                  onChange={(e) => setRole(e.target.value as RegisterableRole)}
+                  onChange={(e) => setRole(e.target.value as UserRole)}
                   className={inputClass}
                 >
                   <option value="student">Student</option>
                   <option value="parent">Parent</option>
                   <option value="teacher">Teacher</option>
+                  <option value="admin">Admin — create a new institution</option>
                 </select>
               </label>
             )}
 
-            {mode === 'register' && (
+            {mode === 'register' && role === 'admin' && (
+              <label className="flex flex-col gap-1 text-xs text-ink-soft font-body">
+                Institution name
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Green Valley Madrasa"
+                  value={organizationName}
+                  onChange={(e) => setOrganizationName(e.target.value)}
+                  className={inputClass}
+                />
+                <span className="text-[11px] text-ink-soft">
+                  This creates a brand-new institution with you as its first admin.
+                </span>
+              </label>
+            )}
+
+            {mode === 'register' && role !== 'admin' && (
               <label className="flex flex-col gap-1 text-xs text-ink-soft font-body">
                 Organization code
                 <input
