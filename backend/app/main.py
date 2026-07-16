@@ -13,6 +13,7 @@ from app.routers import (
     admin,
     api_keys,
     auth,
+    billing,
     communication,
     live_session_ws,
     marketplace,
@@ -64,6 +65,7 @@ app.include_router(api_keys.router)
 app.include_router(public_api.router)
 app.include_router(privacy.router)
 app.include_router(webhooks.router)
+app.include_router(billing.router)
 
 
 @app.on_event("startup")

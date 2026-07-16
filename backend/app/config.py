@@ -63,6 +63,20 @@ class Settings(BaseSettings):
     smtp_password: str | None = None
     smtp_from_address: str = "hifzai@example.com"
 
+    # Phase 32: billing. None by default — same "cleanly disabled, not
+    # fabricated" pattern as openai_api_key above. Without a secret key,
+    # /admin/billing/checkout-session returns a clear 503 rather than
+    # pretending to create a real Stripe session.
+    stripe_secret_key: str | None = None
+    # Verifies that incoming /webhooks/stripe requests genuinely came from
+    # Stripe (not spoofed) — see services/billing.py's verify_webhook_signature.
+    stripe_webhook_secret: str | None = None
+    # The Stripe Price ID for the "pro" plan's monthly subscription,
+    # created once in the Stripe Dashboard (Products -> Pricing) — this
+    # app doesn't create Prices itself, it only references one that
+    # already exists there.
+    stripe_pro_price_id: str | None = None
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     @property

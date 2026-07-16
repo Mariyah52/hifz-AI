@@ -27,10 +27,11 @@ class Organization(Base):
     signing up creates one; everyone else joins an existing one by slug).
 
     Real, enforced: student/teacher counts are checked against
-    `max_students`/`max_teachers` at registration. NOT built: actual
-    billing/payment collection — upgrading `plan` today is a manual
-    database update, not a checkout flow. That's a deliberate scope cut,
-    not an oversight — see the root README's Phase 18 notes.
+    `max_students`/`max_teachers` at registration. Real (Phase 32): an
+    admin can actually pay for the "pro" plan via Stripe Checkout — see
+    `services/billing.py`. `plan` still updates via manual DB edit too if
+    needed (e.g. a negotiated enterprise deal with no card on file), but
+    the normal path is real payment now, not a scope cut.
     """
 
     __tablename__ = "organizations"
@@ -44,3 +45,13 @@ class Organization(Base):
     primary_color: Mapped[str | None] = mapped_column(String, nullable=True)
     logo_url: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    # Phase 32: billing. All nullable — an org on the free plan (the vast
+    # majority, probably) never touches Stripe at all and these stay None
+    # forever. `subscription_status` mirrors Stripe's own vocabulary
+    # (active/past_due/canceled/...) rather than inventing this app's own,
+    # so a support person cross-referencing the Stripe Dashboard sees the
+    # same word in both places.
+    stripe_customer_id: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
+    stripe_subscription_id: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
+    subscription_status: Mapped[str | None] = mapped_column(String, nullable=True)
