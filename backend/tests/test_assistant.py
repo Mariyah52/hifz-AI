@@ -1,3 +1,4 @@
+from datetime import datetime
 from app.models.chat import ChatMessage
 from app.services.assistant_service import get_message_history, get_or_create_conversation, to_message_out
 from tests.conftest import make_student
@@ -36,12 +37,13 @@ def test_to_message_out_splits_tools_called():
     message = ChatMessage(
         id="cmsg_1", conversation_id="conv_1", role="assistant", content="hi",
         tools_called="get_due_reviews,get_progress_summary",
+        created_at=datetime.utcnow(),
     )
     out = to_message_out(message)
     assert out.tools_called == ["get_due_reviews", "get_progress_summary"]
 
 
 def test_to_message_out_empty_tools_called_is_empty_list():
-    message = ChatMessage(id="cmsg_2", conversation_id="conv_1", role="user", content="hi", tools_called=None)
+    message = ChatMessage(id="cmsg_2", conversation_id="conv_1", role="user", content="hi", tools_called=None, created_at=datetime.utcnow())
     out = to_message_out(message)
     assert out.tools_called == []

@@ -53,14 +53,16 @@ def test_delete_note(client, db_session):
 
 def test_test_session_idempotent_on_retry(client, db_session):
     headers = _register_and_login(client, db_session, email="notes4@example.com")
-    payload = {
-        "surahNumber": 1, "surahName": "Al-Fatihah", "fromAyah": 1, "toAyah": 2,
-        "results": [{"ayahNumber": 1, "selfMark": "correct", "durationSeconds": 5}],
-        "scorePercent": 100, "clientMutationId": "fixed-mutation-id-2",
+    form_data = {
+        "surah_number": 1, "surah_name": "Al-Fatihah", "from_ayah": 1, "to_ayah": 2,
+        "client_mutation_id": "fixed-mutation-id-2",
     }
 
-    first = client.post("/me/test-sessions", json=payload, headers=headers)
-    second = client.post("/me/test-sessions", json=payload, headers=headers)
+    def _files():
+        return {"audio": ("attempt.webm", b"fake-audio-bytes", "audio/webm")}
+
+    first = client.post("/me/test-sessions", data=form_data, files=_files(), headers=headers)
+    second = client.post("/me/test-sessions", data=form_data, files=_files(), headers=headers)
 
     assert first.status_code == 201
     assert first.json()["id"] == second.json()["id"]

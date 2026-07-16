@@ -1,6 +1,6 @@
 import hashlib
 import secrets
-from datetime import timedelta
+from datetime import timedelta, timezone
 
 from sqlalchemy.orm import Session
 
@@ -8,6 +8,18 @@ from app.config import settings
 from app.models.auth_security import AuditLogEntry, PasswordResetToken, RefreshToken
 from app.models.user import User, utcnow
 
+
+def _as_aware(value):
+    """Normalize a datetime read back from the DB to timezone-aware UTC.
+
+    Some drivers (notably SQLite) drop timezone info on round-trip, even
+    when the column is declared DateTime(timezone=True). Without this,
+    comparisons against utcnow() raise TypeError: can't compare
+    offset-naive and offset-aware datetimes.
+    """
+    if value is not None and value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value
 
 def _hash_token(raw_token: str) -> str:
     """
@@ -40,7 +52,7 @@ def issue_refresh_token(db: Session, user_id: str, long_lived: bool = True) -> s
 
 def verify_refresh_token(db: Session, raw_token: str) -> RefreshToken | None:
     token = db.query(RefreshToken).filter(RefreshToken.token_hash == _hash_token(raw_token)).first()
-    if token is None or token.revoked_at is not None or token.expires_at < utcnow():
+    if token is None or token.revoked_at is not None or _as_aware(token.expires_at) < utcnow():
         return None
     return token
 
@@ -75,7 +87,7 @@ def issue_password_reset_token(db: Session, user_id: str) -> str:
 
 def verify_password_reset_token(db: Session, raw_token: str) -> PasswordResetToken | None:
     token = db.query(PasswordResetToken).filter(PasswordResetToken.token_hash == _hash_token(raw_token)).first()
-    if token is None or token.used_at is not None or token.expires_at < utcnow():
+    if token is None or token.used_at is not None or _as_aware(token.expires_at) < utcnow():
         return None
     return token
 
@@ -89,7 +101,7 @@ def consume_password_reset_token(db: Session, token: PasswordResetToken) -> None
 
 
 def is_account_locked(user: User) -> bool:
-    return user.locked_until is not None and user.locked_until > utcnow()
+    return user.locked_until is not None and _as_aware(user.locked_until) > utcnow()
 
 
 def register_failed_login(db: Session, user: User) -> None:

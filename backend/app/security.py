@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+import uuid
 import bcrypt
 from jose import JWTError, jwt
 
@@ -19,7 +20,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(subject: str, role: str) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
-    payload = {"sub": subject, "role": role, "exp": expire}
+    payload = {"sub": subject, "role": role, "exp": expire, "jti": uuid.uuid4().hex}
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
 
