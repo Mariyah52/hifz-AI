@@ -199,7 +199,10 @@ def get_my_organization(
         current_student_count=count_users_by_role(db, organization.id, "student"),
         current_teacher_count=count_users_by_role(db, organization.id, "teacher"),
         primary_color=organization.primary_color,
+        secondary_color=organization.secondary_color,
         logo_url=organization.logo_url,
+        welcome_message=organization.welcome_message,
+        principal_message=organization.principal_message,
     )
 
 
@@ -218,8 +221,14 @@ def update_my_organization(
         organization.name = payload.name
     if payload.primary_color is not None:
         organization.primary_color = payload.primary_color
+    if payload.secondary_color is not None:
+        organization.secondary_color = payload.secondary_color
     if payload.logo_url is not None:
         organization.logo_url = payload.logo_url
+    if payload.welcome_message is not None:
+        organization.welcome_message = payload.welcome_message
+    if payload.principal_message is not None:
+        organization.principal_message = payload.principal_message
 
     db.commit()
     db.refresh(organization)
@@ -233,7 +242,10 @@ def update_my_organization(
         current_student_count=count_users_by_role(db, organization.id, "student"),
         current_teacher_count=count_users_by_role(db, organization.id, "teacher"),
         primary_color=organization.primary_color,
+        secondary_color=organization.secondary_color,
         logo_url=organization.logo_url,
+        welcome_message=organization.welcome_message,
+        principal_message=organization.principal_message,
     )
 
 

@@ -43,7 +43,10 @@ class Organization(Base):
     max_students: Mapped[int] = mapped_column(Integer, default=PLAN_DEFAULTS["free"]["max_students"])
     max_teachers: Mapped[int] = mapped_column(Integer, default=PLAN_DEFAULTS["free"]["max_teachers"])
     primary_color: Mapped[str | None] = mapped_column(String, nullable=True)
+    secondary_color: Mapped[str | None] = mapped_column(String, nullable=True)
     logo_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    welcome_message: Mapped[str | None] = mapped_column(String, nullable=True)
+    principal_message: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     # Phase 32: billing. All nullable — an org on the free plan (the vast

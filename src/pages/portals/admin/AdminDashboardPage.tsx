@@ -1,4 +1,4 @@
-import { LogOut, Megaphone, Store, Code2, ChevronRight } from 'lucide-react';
+import { LogOut, Megaphone, Store, Code2, Settings, ChevronRight } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
@@ -114,6 +114,19 @@ export function AdminDashboardPage() {
               <div className="flex-1 min-w-0">
                 <p className="font-body font-semibold text-ink text-sm">Developer API</p>
                 <p className="font-body text-xs text-ink-soft">API keys for ERP/LMS integrations</p>
+              </div>
+              <ChevronRight size={16} className="text-ink-soft shrink-0" />
+            </Link>
+            <Link
+              to="/admin/settings"
+              className="flex items-center gap-3 rounded-card bg-paper border border-ink/[0.06] shadow-folio p-4 hover:bg-paper-dim transition-colors"
+            >
+              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-sage text-ink-soft">
+                <Settings size={16} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-body font-semibold text-ink text-sm">Branding &amp; settings</p>
+                <p className="font-body text-xs text-ink-soft">Logo, colors, welcome message, principal's message</p>
               </div>
               <ChevronRight size={16} className="text-ink-soft shrink-0" />
             </Link>

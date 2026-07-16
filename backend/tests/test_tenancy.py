@@ -118,7 +118,7 @@ def test_organization_public_endpoint_never_exposes_plan_or_counts(client):
     response = client.get("/organizations/private-numbers/public")
     assert response.status_code == 200
     body = response.json()
-    assert set(body.keys()) == {"name", "slug", "primaryColor", "logoUrl"}
+    assert set(body.keys()) == {"name", "slug", "primaryColor", "secondaryColor", "logoUrl", "welcomeMessage"}
 
 
 def test_admin_organization_view_shows_real_usage_counts(client):

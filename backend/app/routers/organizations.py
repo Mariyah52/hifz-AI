@@ -24,5 +24,7 @@ def get_organization_public_info(slug: str, db: Session = Depends(get_db)) -> Or
         name=organization.name,
         slug=organization.slug,
         primary_color=organization.primary_color,
+        secondary_color=organization.secondary_color,
         logo_url=organization.logo_url,
+        welcome_message=organization.welcome_message,
     )

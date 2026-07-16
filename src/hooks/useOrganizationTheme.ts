@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useAuth } from './useAuth';
-import { getOrganizationPublic } from '@/services/organizationService';
+import { useOrganizationBranding } from './useOrganizationBranding';
 import { darkenHex } from '@/utils/color';
 
 /**
@@ -13,16 +11,12 @@ import { darkenHex } from '@/utils/color';
  * Tailwind class already resolves to (see tailwind.config.js), so an
  * installed theme now actually reskins the app. Falls back to the
  * built-in default (tokens.css) whenever no custom color is set.
+ *
+ * `secondaryColor` maps to `--color-gold`, the app's existing accent
+ * color token, the same way `primaryColor` maps to teal.
  */
 export function useOrganizationTheme(): void {
-  const { user } = useAuth();
-
-  const { data } = useQuery({
-    queryKey: ['organization', 'public', user?.organizationSlug],
-    queryFn: () => getOrganizationPublic(user!.organizationSlug),
-    enabled: Boolean(user?.organizationSlug),
-    staleTime: 60_000,
-  });
+  const { data } = useOrganizationBranding();
 
   useEffect(() => {
     const root = document.documentElement.style;
@@ -33,5 +27,11 @@ export function useOrganizationTheme(): void {
       root.removeProperty('--color-teal');
       root.removeProperty('--color-teal-dark');
     }
-  }, [data?.primaryColor]);
+
+    if (data?.secondaryColor) {
+      root.setProperty('--color-gold', data.secondaryColor);
+    } else {
+      root.removeProperty('--color-gold');
+    }
+  }, [data?.primaryColor, data?.secondaryColor]);
 }

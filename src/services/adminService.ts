@@ -1,6 +1,6 @@
 import { apiFetch } from './apiClient';
 import type { AdminAnalytics, AuditLogEntry, ClassSummary, Teacher } from '@/types/admin';
-import type { OrganizationAdmin } from '@/types/organization';
+import type { OrganizationAdmin, UpdateOrganizationRequest } from '@/types/organization';
 
 /**
  * Real backend calls now — Phase 9's `mockTeachers.ts` roster is gone;
@@ -27,4 +27,8 @@ export function getAuditLog(): Promise<AuditLogEntry[]> {
 /** Phase 18 — this admin's own organization, including real plan-usage numbers. */
 export function getMyOrganization(): Promise<OrganizationAdmin> {
   return apiFetch<OrganizationAdmin>('/admin/organization');
+}
+
+export function updateMyOrganization(payload: UpdateOrganizationRequest): Promise<OrganizationAdmin> {
+  return apiFetch<OrganizationAdmin>('/admin/organization', { method: 'PATCH', body: payload });
 }
