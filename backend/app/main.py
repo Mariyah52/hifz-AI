@@ -15,6 +15,7 @@ from app.routers import (
     auth,
     billing,
     communication,
+    live_coach_ws,
     live_session_ws,
     marketplace,
     me,
@@ -59,6 +60,7 @@ app.include_router(admin.router)
 app.include_router(notifications.router)
 app.include_router(organizations.router)
 app.include_router(live_session_ws.router)
+app.include_router(live_coach_ws.router)
 app.include_router(communication.router)
 app.include_router(marketplace.router)
 app.include_router(api_keys.router)
