@@ -20,8 +20,10 @@ from app.routers import (
     notifications,
     organizations,
     parent,
+    privacy,
     public_api,
     teacher,
+    webhooks,
 )
 from app.scheduler import start_scheduler, stop_scheduler
 
@@ -60,6 +62,8 @@ app.include_router(communication.router)
 app.include_router(marketplace.router)
 app.include_router(api_keys.router)
 app.include_router(public_api.router)
+app.include_router(privacy.router)
+app.include_router(webhooks.router)
 
 
 @app.on_event("startup")

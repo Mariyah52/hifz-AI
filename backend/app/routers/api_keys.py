@@ -19,11 +19,12 @@ def get_api_keys(admin: User = Depends(require_role("admin")), db: Session = Dep
 def post_api_key(
     payload: CreateApiKeyRequest, admin: User = Depends(require_role("admin")), db: Session = Depends(get_db)
 ) -> ApiKeyCreatedOut:
-    record, raw_key = create_api_key(db, admin.organization_id, admin.id, payload.name)
+    record, raw_key = create_api_key(db, admin.organization_id, admin.id, payload.name, payload.scopes)
     return ApiKeyCreatedOut(
         id=record.id,
         name=record.name,
         key_prefix=record.key_prefix,
+        scopes=record.scopes,
         created_at=record.created_at,
         last_used_at=record.last_used_at,
         revoked_at=record.revoked_at,

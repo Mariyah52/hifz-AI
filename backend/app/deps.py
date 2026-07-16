@@ -78,3 +78,22 @@ def get_api_key(raw_key: str | None = Depends(api_key_header), db: Session = Dep
     if key is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or revoked API key")
     return key
+
+
+def require_api_scope(scope: str):
+    """
+    Phase 31: layers on top of get_api_key for endpoints that mutate
+    data. Every key defaults to 'read' scope (see ApiKey model) — a key
+    issued before write endpoints existed, or one an admin deliberately
+    keeps read-only, gets a 403 here rather than silently being allowed
+    to write once the endpoint existed.
+    """
+    def _check(api_key: ApiKey = Depends(get_api_key)) -> ApiKey:
+        if not api_key.has_scope(scope):
+            raise HTTPException(
+                status.HTTP_403_FORBIDDEN,
+                f"This API key doesn't have '{scope}' scope. Ask an admin to issue a key with write access.",
+            )
+        return api_key
+
+    return _check

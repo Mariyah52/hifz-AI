@@ -17,6 +17,12 @@ class ApiKey(Base):
     characters) is stored in the clear purely so an admin can tell keys
     apart in a list without the actual secret ever touching a database
     row a second time.
+
+    `scopes` (Phase 31): a comma-separated scope string, e.g. `"read"` or
+    `"read,write"` — same convention as `ChatMessage.tools_called`
+    elsewhere in this app. Defaults to `"read"`; a key must be explicitly
+    created (or re-issued) with write scope, so no previously-issued key
+    silently gains write access. See `deps.require_api_scope`.
     """
 
     __tablename__ = "api_keys"
@@ -26,7 +32,11 @@ class ApiKey(Base):
     name: Mapped[str] = mapped_column(String)
     key_prefix: Mapped[str] = mapped_column(String)
     hashed_key: Mapped[str] = mapped_column(String, unique=True, index=True)
+    scopes: Mapped[str] = mapped_column(String, default="read", server_default="read")
     created_by_user_id: Mapped[str] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     last_used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    def has_scope(self, scope: str) -> bool:
+        return scope in (s.strip() for s in self.scopes.split(","))

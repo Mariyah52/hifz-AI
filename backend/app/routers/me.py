@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, Response, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -18,6 +18,7 @@ from app.schemas.progress import ProgressSummary
 from app.schemas.analytics import AdvancedAnalyticsOut
 from app.schemas.gamification import AchievementOut, GamificationSummary, LeaderboardEntryOut
 from app.schemas.review import DueReviewOut, ReviewScheduleOut
+from app.schemas.weakness_prediction import WeaknessPredictionOut
 from app.schemas.test import QuizTestSessionCreate, TestSessionOut
 from app.schemas.test_modes import GenerateTestRequest, GeneratedTestOut
 from app.schemas.assistant import ChatMessageOut, SendMessageRequest
@@ -40,6 +41,8 @@ from app.services.progress_analytics import build_progress_summary
 from app.services.recitation_analysis import analyze_attempt
 from app.services.test_analysis import analyze_test_session
 from app.services.spaced_repetition import get_dashboard_reviews, get_due_reviews, record_test_result
+from app.services.weakness_prediction import predict_weakness
+from app.services.webhooks import dispatch_event
 from app.services.streak import record_activity_today
 from app.services.test_modes import NoContentAvailable, generate_mixed_revision, generate_question
 from app.services.student_view import (
@@ -234,15 +237,22 @@ def get_my_class_active_session(
 
 @router.get("/certificates", response_model=list[CertificateOut])
 async def list_my_certificates(
+    background_tasks: BackgroundTasks,
     student: StudentProfile = Depends(get_current_student_profile), db: Session = Depends(get_db)
 ) -> list[CertificateOut]:
     """
     Phase 27: lazily checks for any newly-earned surah/juz completion
     certificates (same self-healing pattern as achievements) before
     returning the full list — nothing here is pre-computed and cached
-    stale.
+    stale. Phase 31: any certificate newly awarded on this call also
+    fires a 'certificate.issued' webhook event to the org's subscribers.
     """
-    await check_and_award_certificates(db, student)
+    newly_issued = await check_and_award_certificates(db, student)
+    for cert in newly_issued:
+        background_tasks.add_task(
+            dispatch_event, db, student.user.organization_id, "certificate.issued",
+            {"certificateId": cert.id, "studentId": student.id, "type": cert.type, "title": cert.title},
+        )
     certificates = (
         db.query(Certificate).filter(Certificate.student_id == student.id).order_by(Certificate.issued_at.desc()).all()
     )
@@ -476,6 +486,7 @@ async def retry_test_session_analysis(
 def update_sabaq_status(
     sabaq_id: str,
     status_value: str,
+    background_tasks: BackgroundTasks,
     student: StudentProfile = Depends(get_current_student_profile),
     db: Session = Depends(get_db),
 ) -> SabaqOut:
@@ -487,9 +498,20 @@ def update_sabaq_status(
     if sabaq is None or sabaq.student_id != student.id:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Sabaq not found")
 
+    just_completed = status_value == "completed" and sabaq.status != "completed"
     sabaq.status = status_value
     db.commit()
     db.refresh(sabaq)
+
+    if just_completed:
+        background_tasks.add_task(
+            dispatch_event, db, student.user.organization_id, "sabaq.completed",
+            {
+                "sabaqId": sabaq.id, "studentId": student.id, "surahNumber": sabaq.surah_number,
+                "fromAyah": sabaq.from_ayah, "toAyah": sabaq.to_ayah,
+            },
+        )
+
     return SabaqOut.model_validate(sabaq)
 
 
@@ -541,6 +563,34 @@ def list_due_reviews(
             ),
         )
         for sabaq, schedule in due
+    ]
+
+
+@router.get("/reviews/weakness-prediction", response_model=list[WeaknessPredictionOut])
+def list_weakness_predictions(
+    student: StudentProfile = Depends(get_current_student_profile), db: Session = Depends(get_db)
+) -> list[WeaknessPredictionOut]:
+    """
+    Forgetting-risk estimate for every Sabaq in this student's SM-2
+    rotation, highest-risk first — including items not yet due, unlike
+    /reviews/due. See services/weakness_prediction.py's module docstring:
+    this is a documented SM-2-decay heuristic (`basis` field says so
+    explicitly on every row), not a trained model's output.
+    """
+    predictions = predict_weakness(db, student.id)
+    return [
+        WeaknessPredictionOut(
+            sabaq_id=p.sabaq_id,
+            surah_number=p.surah_number,
+            from_ayah=p.from_ayah,
+            to_ayah=p.to_ayah,
+            days_since_last_review=p.days_since_last_review,
+            days_until_due=p.days_until_due,
+            forgetting_risk_percent=p.forgetting_risk_percent,
+            ease_factor=p.ease_factor,
+            basis=p.basis,
+        )
+        for p in predictions
     ]
 
 

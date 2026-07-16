@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -18,6 +18,7 @@ from app.schemas.teacher import AddFeedbackRequest, StudentDetailOut, StudentOut
 from app.services.notification_service import create_notification
 from app.services.certificate_service import issue_certificate, render_certificate_pdf
 from app.services.messaging_service import create_announcement, create_homework
+from app.services.webhooks import dispatch_event
 from app.services.live_session_service import (
     LiveSessionError,
     build_report,
@@ -185,6 +186,7 @@ def get_live_session_report(
 def issue_student_certificate(
     student_id: str,
     payload: IssueCertificateRequest,
+    background_tasks: BackgroundTasks,
     teacher: TeacherProfile = Depends(get_current_teacher_profile),
     db: Session = Depends(get_db),
 ) -> CertificateOut:
@@ -195,6 +197,10 @@ def issue_student_certificate(
     """
     student = _get_student_in_scope(db, teacher, student_id)
     certificate = issue_certificate(db, student.id, payload.type, payload.title, payload.detail, teacher.id)
+    background_tasks.add_task(
+        dispatch_event, db, teacher.user.organization_id, "certificate.issued",
+        {"certificateId": certificate.id, "studentId": student.id, "type": certificate.type, "title": certificate.title},
+    )
     return CertificateOut(
         id=certificate.id, type=certificate.type, title=certificate.title, detail=certificate.detail,
         issued_by_teacher_name=teacher.user.name, issued_at=certificate.issued_at,

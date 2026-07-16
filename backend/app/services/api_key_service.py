@@ -24,12 +24,17 @@ def _generate_raw_key() -> str:
     return f"{KEY_PREFIX}{secrets.token_urlsafe(32)}"
 
 
-def create_api_key(db: Session, organization_id: str, created_by_user_id: str, name: str) -> tuple[ApiKey, str]:
+def create_api_key(
+    db: Session, organization_id: str, created_by_user_id: str, name: str, scopes: str = "read"
+) -> tuple[ApiKey, str]:
     """
     Returns the persisted row plus the one-time raw key. Only the row's
     `hashed_key` is ever committed to the database — the raw value the
     caller returns to the admin isn't retrievable again after this
     function returns, by construction, not by policy.
+
+    `scopes` defaults to read-only — an admin has to explicitly ask for
+    `"read,write"` to issue a key that can call the write endpoints.
     """
     raw_key = _generate_raw_key()
     record = ApiKey(
@@ -38,6 +43,7 @@ def create_api_key(db: Session, organization_id: str, created_by_user_id: str, n
         key_prefix=raw_key[: len(KEY_PREFIX) + 6],
         hashed_key=_hash_key(raw_key),
         created_by_user_id=created_by_user_id,
+        scopes=scopes,
     )
     db.add(record)
     db.commit()

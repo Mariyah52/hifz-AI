@@ -1,7 +1,7 @@
 import uuid
 from datetime import date, datetime, timezone
 
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -48,6 +48,12 @@ class User(Base):
     # services/auth_security.py for the exact thresholds and logic.
     failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0)
     locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    # Data privacy: set by services/data_privacy.py's account-deletion flow.
+    # See that module's docstring for why this is an in-place anonymization
+    # rather than a hard row delete.
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    anonymized: Mapped[bool] = mapped_column(Boolean, default=False)
 
     student_profile: Mapped["StudentProfile"] = relationship(
         back_populates="user", uselist=False, cascade="all, delete-orphan"
