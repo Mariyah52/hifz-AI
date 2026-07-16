@@ -199,19 +199,6 @@ export function LoginPage() {
           {mode === 'login' ? "Don't have an account? Sign up" : 'Already have an account? Log in'}
         </button>
 
-        {mode === 'login' && (
-          <Card className="mt-4 opacity-80">
-            <p className="text-[11px] uppercase tracking-widest text-ink-soft font-mono mb-2">
-              Demo accounts (backend seed data)
-            </p>
-            <p className="text-xs text-ink-soft font-body leading-relaxed">
-              Any of the emails from <code>backend/app/seed.py</code> — e.g.{' '}
-              <code>yusuf.student@hifzai.demo</code> — with password{' '}
-              <code>hifzai-demo-2026</code>. To register a new account into that same demo
-              organization instead, use organization code <code>hifzai-demo</code>.
-            </p>
-          </Card>
-        )}
       </div>
     </div>
   );
