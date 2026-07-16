@@ -1,4 +1,4 @@
-import { LogOut, Megaphone, Store, Code2, Settings, ChevronRight } from 'lucide-react';
+import { Megaphone, Store, Code2, Settings, ChevronRight } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
@@ -6,10 +6,9 @@ import { StatTile } from '@/components/progress/StatTile';
 import { StudentCard } from '@/components/teacher/StudentCard';
 import { TeacherCard } from '@/components/admin/TeacherCard';
 import { ClassCard } from '@/components/admin/ClassCard';
-import { NotificationBellButton } from '@/components/shared/NotificationBellButton';
+import { OrganizationBanner } from '@/components/layout/OrganizationBanner';
 import { postAdminAnnouncement } from '@/services/communicationService';
 import { useAdminOverview } from '@/hooks/useAdminOverview';
-import { useAuth } from '@/hooks/useAuth';
 
 export function AdminDashboardPage() {
   // `auditLog` is intentionally not read here — the "Security activity"
@@ -17,7 +16,6 @@ export function AdminDashboardPage() {
   // every login/logout/etc via log_audit_event() regardless (see
   // routers/auth.py), so nothing about the underlying data changed.
   const { teachers, classes, analytics, organization, isLoading } = useAdminOverview();
-  const { logout } = useAuth();
   const [annTitle, setAnnTitle] = useState('');
   const [annContent, setAnnContent] = useState('');
   const [isPosting, setIsPosting] = useState(false);
@@ -43,29 +41,14 @@ export function AdminDashboardPage() {
 
   return (
     <>
-      <header className="flex items-center justify-between gap-3 px-5 pt-6 pb-2">
-        <div>
-          <p className="text-sm text-ink-soft font-body">Admin</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Institution overview</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <NotificationBellButton sizeClass="h-9 w-9" />
-          <button
-            aria-label="Log out"
-            onClick={logout}
-            className="grid h-9 w-9 place-items-center rounded-full bg-sage text-ink-soft hover:bg-[#d8dfcd] transition-colors"
-          >
-            <LogOut size={18} />
-          </button>
-        </div>
-      </header>
+      <OrganizationBanner roleLabel="Admin" />
 
       <main className="px-5 flex flex-col gap-5 mt-2 pb-4">
         {organization && (
           <Card>
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-body font-semibold text-ink text-sm">{organization.name}</p>
+                <p className="font-body font-semibold text-ink text-sm">Institution overview</p>
                 <p className="font-mono text-xs text-ink-soft mt-0.5">
                   Code: {organization.slug} · {organization.plan} plan
                 </p>
