@@ -12,6 +12,8 @@ import { LearnSurahPage } from '@/pages/LearnSurahPage';
 import { MushafPage } from '@/pages/MushafPage';
 import { PracticePage } from '@/pages/PracticePage';
 import { PracticeSurahPage } from '@/pages/PracticeSurahPage';
+import { LiveCoachPage } from '@/pages/LiveCoachPage';
+import { LiveCoachSurahPage } from '@/pages/LiveCoachSurahPage';
 import { TestPage } from '@/pages/TestPage';
 import { TestSurahPage } from '@/pages/TestSurahPage';
 import { ProgressPage } from '@/pages/ProgressPage';
@@ -79,6 +81,8 @@ export function AppRoutes() {
             <Route path="/mushaf/:pageNumber" element={<MushafPage />} />
             <Route path="/practice" element={<PracticePage />} />
             <Route path="/practice/:surahNumber" element={<PracticeSurahPage />} />
+            <Route path="/live-coach" element={<LiveCoachPage />} />
+            <Route path="/live-coach/:surahNumber" element={<LiveCoachSurahPage />} />
             <Route path="/test" element={<TestPage />} />
             <Route path="/test/:surahNumber" element={<TestSurahPage />} />
             <Route path="/progress" element={<ProgressPage />} />
