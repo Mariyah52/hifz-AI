@@ -14,6 +14,7 @@ from app.models.user import StudentProfile
 from app.schemas.lesson import SabaqOut
 from app.schemas.note import NoteCreate, NoteOut
 from app.schemas.practice import PracticeAttemptOut
+from app.schemas.tajweed_analysis import ElongationFlagOut, TajweedAnalysisOut
 from app.schemas.progress import ProgressSummary
 from app.schemas.analytics import AdvancedAnalyticsOut
 from app.schemas.gamification import AchievementOut, GamificationSummary, LeaderboardEntryOut
@@ -39,6 +40,7 @@ from app.services.gamification import (
 from app.services.media import save_audio_file, save_test_audio_file
 from app.services.progress_analytics import build_progress_summary
 from app.services.recitation_analysis import analyze_attempt
+from app.services.tajweed_analysis import TajweedAnalysisError, analyze_tajweed_for_attempt
 from app.services.test_analysis import analyze_test_session
 from app.services.spaced_repetition import get_dashboard_reviews, get_due_reviews, record_test_result
 from app.services.weakness_prediction import predict_weakness
@@ -539,6 +541,43 @@ async def analyze_practice_attempt(
     await analyze_attempt(db, attempt)
     db.refresh(attempt)
     return to_practice_attempt_out(attempt)
+
+
+@router.post("/practice-attempts/{attempt_id}/tajweed-analysis", response_model=TajweedAnalysisOut)
+async def analyze_practice_attempt_tajweed(
+    attempt_id: str,
+    student: StudentProfile = Depends(get_current_student_profile),
+    db: Session = Depends(get_db),
+) -> TajweedAnalysisOut:
+    """
+    Phase 34: elongation (madd) timing check — see
+    services/tajweed_analysis.py's module docstring for exactly what this
+    does and does NOT check (elongation length only, not ghunnah,
+    qalqalah, or articulation). Not persisted — computed fresh each call.
+
+    Unlike /analyze, this DOES raise a real error to the client rather
+    than silently storing a failure — there's no analysis row for this
+    feature to record a failure status on, since it isn't persisted.
+    """
+    attempt = db.get(PracticeAttempt, attempt_id)
+    if attempt is None or attempt.student_id != student.id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Practice attempt not found")
+
+    try:
+        result = await analyze_tajweed_for_attempt(attempt)
+    except TajweedAnalysisError as exc:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
+
+    return TajweedAnalysisOut(
+        flags=[
+            ElongationFlagOut(
+                word=f.word, ayah_number=f.ayah_number, rule=f.rule,
+                expected_minimum_seconds=f.expected_minimum_seconds, actual_seconds=f.actual_seconds,
+            )
+            for f in result.flags
+        ],
+        words_checked_for_elongation=result.words_checked_for_elongation,
+    )
 
 
 @router.get("/reviews/due", response_model=list[DueReviewOut])
