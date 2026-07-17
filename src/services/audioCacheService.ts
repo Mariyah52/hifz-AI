@@ -1,4 +1,4 @@
-import { getAyahAudioUrl } from './audioService';
+import { getAyahAudioDownloadUrl, getAyahAudioUrl } from './audioService';
 import * as cacheDb from './audioCacheDb';
 
 const DOWNLOADED_SURAHS_KEY = 'downloadedSurahs';
@@ -36,7 +36,13 @@ export async function downloadAyah(surahNumber: number, ayahNumber: number): Pro
   const existing = await cacheDb.getBlob(key);
   if (existing) return;
 
-  const response = await fetch(key);
+  // Fetch via this app's own backend proxy, not the CDN URL directly —
+  // the CDN sends no CORS headers, so a browser fetch()+blob() would be
+  // silently blocked even though the same URL plays fine in an <audio>
+  // tag. The cache key stays the original CDN URL (matching
+  // getPlayableAyahUrl's lookup) — only where the bytes come from changes.
+  const downloadUrl = getAyahAudioDownloadUrl(surahNumber, ayahNumber);
+  const response = await fetch(downloadUrl);
   if (!response.ok) {
     throw new Error(`Couldn't download ayah ${ayahNumber} audio (HTTP ${response.status})`);
   }

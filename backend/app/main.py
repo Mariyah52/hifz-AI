@@ -19,6 +19,7 @@ from app.routers import (
     live_session_ws,
     marketplace,
     me,
+    media,
     notifications,
     organizations,
     parent,
@@ -59,6 +60,7 @@ app.include_router(parent.router)
 app.include_router(admin.router)
 app.include_router(notifications.router)
 app.include_router(organizations.router)
+app.include_router(media.router)
 app.include_router(live_session_ws.router)
 app.include_router(live_coach_ws.router)
 app.include_router(communication.router)

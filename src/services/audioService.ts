@@ -1,4 +1,5 @@
 import { getGlobalAyahNumber } from './quranService';
+import { API_BASE_URL } from './apiClient';
 import type { Reciter } from '@/types/quran';
 
 export const HUSARY: Reciter = {
@@ -29,4 +30,17 @@ export function getReciter(): Reciter {
 export function getAyahAudioUrl(surahNumber: number, ayahNumber: number, bitrate = DEFAULT_BITRATE): string {
   const globalAyahNumber = getGlobalAyahNumber(surahNumber, ayahNumber);
   return `${CDN_BASE}/${bitrate}/${RECITER_EDITION}/${globalAyahNumber}.mp3`;
+}
+
+/**
+ * Same audio, routed through this app's own backend instead of the CDN
+ * directly — used only for offline download (see audioCacheService.ts).
+ * The CDN sends no Access-Control-Allow-Origin header, so a browser
+ * fetch()+blob() download is silently blocked by CORS even though an
+ * <audio> tag plays the same URL fine. Playback keeps using
+ * getAyahAudioUrl() above unchanged; only the download path needs this.
+ */
+export function getAyahAudioDownloadUrl(surahNumber: number, ayahNumber: number, bitrate = DEFAULT_BITRATE): string {
+  const globalAyahNumber = getGlobalAyahNumber(surahNumber, ayahNumber);
+  return new URL(`/media/quran-audio/${bitrate}/${globalAyahNumber}.mp3`, API_BASE_URL).toString();
 }
