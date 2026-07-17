@@ -38,7 +38,6 @@ import { TeacherStudentDetailPage } from '@/pages/portals/teacher/TeacherStudent
 import { ParentDashboardPage } from '@/pages/portals/parent/ParentDashboardPage';
 import { AdminDashboardPage } from '@/pages/portals/admin/AdminDashboardPage';
 import { MarketplacePage } from '@/pages/portals/admin/MarketplacePage';
-import { DeveloperApiPage } from '@/pages/portals/admin/DeveloperApiPage';
 import { AdminSettingsPage } from '@/pages/portals/admin/AdminSettingsPage';
 
 /** Wraps every authenticated route in the shared shell (bottom nav for students, bare header otherwise). */
@@ -113,7 +112,6 @@ export function AppRoutes() {
           <Route element={<RequireRole role="admin" />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
             <Route path="/admin/marketplace" element={<MarketplacePage />} />
-            <Route path="/admin/developer-api" element={<DeveloperApiPage />} />
             <Route path="/admin/settings" element={<AdminSettingsPage />} />
           </Route>
         </Route>
