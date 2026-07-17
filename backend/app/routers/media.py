@@ -13,7 +13,7 @@ proxy-download it. See quran_audio_proxy.py for why this proxy exists.
 router = APIRouter(prefix="/media", tags=["media"])
 
 
-@router.get("/quran-audio/{bitrate}/{global_ayah_number}.mp3")
+@router.get("/quran-audio/{bitrate}/{global_ayah_number}")
 async def get_quran_audio(bitrate: int, global_ayah_number: int) -> Response:
     try:
         audio_bytes = await fetch_ayah_audio(global_ayah_number, bitrate)

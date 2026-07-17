@@ -42,5 +42,5 @@ export function getAyahAudioUrl(surahNumber: number, ayahNumber: number, bitrate
  */
 export function getAyahAudioDownloadUrl(surahNumber: number, ayahNumber: number, bitrate = DEFAULT_BITRATE): string {
   const globalAyahNumber = getGlobalAyahNumber(surahNumber, ayahNumber);
-  return new URL(`/media/quran-audio/${bitrate}/${globalAyahNumber}.mp3`, API_BASE_URL).toString();
+  return new URL(`/media/quran-audio/${bitrate}/${globalAyahNumber}`, API_BASE_URL).toString();
 }

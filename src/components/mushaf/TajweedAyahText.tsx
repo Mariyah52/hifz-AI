@@ -17,14 +17,15 @@ export function TajweedAyahText({ ayahNumber, text, isActive, onSelect }: Tajwee
     <span
       id={`ayah-${ayahNumber}`}
       onClick={onSelect}
-      // box-decoration-break: clone — without this, an inline element's
-      // border/shadow only wraps the whole run's bounding box, which
-      // renders as disconnected, mismatched boxes when a long ayah spans
-      // multiple visual lines. clone makes each wrapped line render its
-      // own consistent rounded box instead.
+      // Background wash only, no border/outline — a border or inset
+      // shadow on an inline element that wraps across several visual
+      // lines (a long ayah in justified RTL text) renders as
+      // disconnected, mismatched-size boxes per line no matter what
+      // box-decoration-break does here. A plain background color fills
+      // each wrapped line smoothly with no hard edges to look broken.
       style={{ WebkitBoxDecorationBreak: 'clone', boxDecorationBreak: 'clone' }}
       className={`cursor-pointer transition-colors duration-200 rounded-md px-0.5 ${
-        isActive ? 'bg-gold/20 shadow-[inset_0_0_0_1px_var(--color-gold)]' : 'hover:bg-sage/60'
+        isActive ? 'bg-gold/25' : 'hover:bg-sage/60'
       }`}
     >
       {segments.map((segment, i) =>

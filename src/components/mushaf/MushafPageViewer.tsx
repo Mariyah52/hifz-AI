@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { MushafPageAyahSpan } from './MushafPageAyahSpan';
 import { MushafPageAyahSpanTajweed } from './MushafPageAyahSpanTajweed';
-import { splitBismillah, splitBismillahTagged } from '@/utils/bismillah';
-import { parseTajweedSegments, stripTajweedTags } from '@/utils/tajweed';
+import { splitBismillah } from '@/utils/bismillah';
+import { parseTajweedSegments } from '@/utils/tajweed';
+import { getSurahTajweedText } from '@/services/quranTextService';
 import type { MushafPageAyah } from '@/types/quran';
 
 interface MushafPageViewerProps {
@@ -21,10 +23,41 @@ interface MushafPageViewerProps {
  * glyph fonts (e.g. KFGQPC's one-font-per-page sets) or rasterized page
  * images, not text reflow — a different, larger piece of work than this
  * phase's scope. See the root README's Phase 12 notes.
+ *
+ * Bismillah handling differs by edition, verified against the live API:
+ * `quran-uthmani` bakes the Bismillah into ayah 1's text for every surah
+ * except At-Tawbah (9) (see splitBismillah). `quran-tajweed` does NOT —
+ * confirmed by fetching a real ayah (e.g. 4:1 on quran-tajweed): it starts
+ * directly with the surah's actual first words, no Bismillah prefix. So
+ * in tajweed mode there's nothing to split out of a surah's own opening
+ * ayah — instead this fetches Al-Fatiha's own ayah 1 (which genuinely
+ * *is* the Bismillah) once, cached, and reuses that same tajweed-colored
+ * text as the heading for every surah-opening group on this page.
  */
 export function MushafPageViewer({ ayahs, tajweedAyahs }: MushafPageViewerProps) {
   const useTajweed = Boolean(tajweedAyahs && tajweedAyahs.length > 0);
   const sourceAyahs = useTajweed ? tajweedAyahs! : ayahs;
+
+  const [tajweedBismillah, setTajweedBismillah] = useState<string | null>(null);
+  useEffect(() => {
+    if (!useTajweed) {
+      setTajweedBismillah(null);
+      return;
+    }
+    let cancelled = false;
+    getSurahTajweedText(1)
+      .then((alFatihaAyahs) => {
+        if (cancelled) return;
+        const ayah1 = alFatihaAyahs.find((a) => a.ayahNumber === 1);
+        setTajweedBismillah(ayah1?.text ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) setTajweedBismillah(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [useTajweed]);
 
   const groups: { surahNumber: number; surahName: string; ayahs: MushafPageAyah[] }[] = [];
   for (const ayah of sourceAyahs) {
@@ -41,14 +74,18 @@ export function MushafPageViewer({ ayahs, tajweedAyahs }: MushafPageViewerProps)
       {groups.map((group) => {
         const firstAyah = group.ayahs[0];
         const opensWithBismillah = firstAyah.ayahNumber === 1 && firstAyah.surahNumber !== 9;
-        const { bismillah, rest } = opensWithBismillah
-          ? useTajweed
-            ? splitBismillahTagged(firstAyah.text, stripTajweedTags(firstAyah.text))
-            : splitBismillah(firstAyah.text)
-          : { bismillah: null, rest: firstAyah.text };
-        const bodyAyahs = bismillah
-          ? group.ayahs.map((a, i) => (i === 0 ? { ...a, text: rest } : a)).filter((a) => a.text.trim().length > 0)
-          : group.ayahs;
+        const isAlFatihaBismillahAyah = firstAyah.surahNumber === 1 && firstAyah.ayahNumber === 1;
+
+        const { bismillah, rest } = !opensWithBismillah
+          ? { bismillah: null, rest: firstAyah.text }
+          : useTajweed
+            ? { bismillah: tajweedBismillah, rest: firstAyah.text }
+            : splitBismillah(firstAyah.text);
+
+        const bodyAyahs =
+          bismillah && (!useTajweed || isAlFatihaBismillahAyah)
+            ? group.ayahs.map((a, i) => (i === 0 ? { ...a, text: rest } : a)).filter((a) => a.text.trim().length > 0)
+            : group.ayahs;
 
         return (
           <div key={`${group.surahNumber}-${firstAyah.ayahNumber}`}>
