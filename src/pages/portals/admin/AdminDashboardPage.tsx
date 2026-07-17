@@ -72,7 +72,7 @@ export function AdminDashboardPage() {
         )}
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Manage</h3>
+          <h3 className="heading-subsection mb-3">Manage</h3>
           <div className="flex flex-col gap-2">
             <Link
               to="/admin/marketplace"
@@ -118,7 +118,7 @@ export function AdminDashboardPage() {
         </div>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Classes</h3>
+          <h3 className="heading-subsection mb-3">Classes</h3>
           <div className="flex flex-col gap-2">
             {classes.map((c) => (
               <ClassCard key={c.id} classSummary={c} />
@@ -127,7 +127,7 @@ export function AdminDashboardPage() {
         </section>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Teachers</h3>
+          <h3 className="heading-subsection mb-3">Teachers</h3>
           <div className="flex flex-col gap-2">
             {teachers.map((t) => (
               <TeacherCard key={t.id} teacher={t} classCount={t.classIds.length} />
@@ -136,7 +136,7 @@ export function AdminDashboardPage() {
         </section>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Needs attention</h3>
+          <h3 className="heading-subsection mb-3">Needs attention</h3>
           {analytics.studentsNeedingAttention.length > 0 ? (
             <div className="flex flex-col gap-2">
               {analytics.studentsNeedingAttention.map((s) => (
@@ -153,7 +153,7 @@ export function AdminDashboardPage() {
         </section>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3 flex items-center gap-1.5">
+          <h3 className="heading-subsection mb-3 flex items-center gap-1.5">
             <Megaphone size={16} />
             Institution-wide announcement
           </h3>

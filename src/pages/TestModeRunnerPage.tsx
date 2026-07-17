@@ -58,7 +58,7 @@ export function TestModeRunnerPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Test Mode</p>
-          <h1 className="font-display text-xl font-semibold text-ink">{descriptor?.label ?? mode}</h1>
+          <h1 className="heading-section">{descriptor?.label ?? mode}</h1>
         </div>
       </header>
 

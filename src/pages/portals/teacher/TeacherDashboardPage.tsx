@@ -15,7 +15,7 @@ export function TeacherDashboardPage() {
       <header className="flex items-center justify-between gap-3 px-5 pt-6 pb-2">
         <div>
           <p className="text-sm text-ink-soft font-body">Teacher Portal</p>
-          <h1 className="font-display text-xl font-semibold text-ink">
+          <h1 className="heading-section">
             {isLoading ? 'Loading…' : `${roster.length} students`}
           </h1>
         </div>

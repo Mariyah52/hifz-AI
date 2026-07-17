@@ -121,7 +121,7 @@ function DashboardContent({
         </Link>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Today's Plan</h3>
+          <h3 className="heading-subsection mb-3">Today's Plan</h3>
           <DailyPlanCard sabaq={todaysSabaq} sabqi={todaysSabqi} manzil={todaysManzil} />
           {dueReviews && dueReviews.length > 0 && (
             <Link
@@ -152,7 +152,7 @@ function DashboardContent({
         </div>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Recent Sabaqs</h3>
+          <h3 className="heading-subsection mb-3">Recent Sabaqs</h3>
           <div className="flex flex-col gap-2">
             {recentSabaqs.map((sabaq) => (
               <SabaqCard key={sabaq.id} sabaq={sabaq} />

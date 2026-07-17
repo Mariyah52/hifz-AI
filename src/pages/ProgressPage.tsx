@@ -71,7 +71,7 @@ export function ProgressPage() {
         {gamification && (
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-display text-base font-semibold text-ink">Level &amp; Achievements</h3>
+              <h3 className="heading-subsection">Level &amp; Achievements</h3>
               <Link
                 to="/leaderboard"
                 className="flex items-center gap-1 text-xs font-body font-semibold text-teal-dark hover:text-teal-dark/80 transition-colors"
@@ -127,7 +127,7 @@ export function ProgressPage() {
         </Link>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">This week</h3>
+          <h3 className="heading-subsection mb-3">This week</h3>
           <Card>
             <WeeklyActivityChart data={progress.weeklyActivity} />
             <div className="flex items-center gap-4 mt-2 justify-center">
@@ -142,7 +142,7 @@ export function ProgressPage() {
         </section>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Last 30 days</h3>
+          <h3 className="heading-subsection mb-3">Last 30 days</h3>
           <Card>
             <MonthlyTrendChart data={progress.monthlyActivity} />
           </Card>

@@ -19,7 +19,7 @@ export function AdvancedAnalyticsPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Analytics</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Deeper insights</h1>
+          <h1 className="heading-section">Deeper insights</h1>
         </div>
       </header>
 
@@ -57,7 +57,7 @@ export function AdvancedAnalyticsPage() {
             </div>
 
             <section>
-              <h3 className="font-display text-base font-semibold text-ink mb-2">Where to focus</h3>
+              <h3 className="heading-subsection mb-2">Where to focus</h3>
               <div className="flex flex-col gap-2">
                 {data.weakestSurah && (
                   <div className="flex items-center justify-between rounded-2xl bg-paper-dim px-4 py-3">

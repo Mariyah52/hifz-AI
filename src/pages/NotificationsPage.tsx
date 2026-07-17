@@ -56,7 +56,7 @@ export function NotificationsPage() {
           </button>
           <div>
             <p className="text-sm text-ink-soft font-body">Notifications</p>
-            <h1 className="font-display text-xl font-semibold text-ink">
+            <h1 className="heading-section">
               {isLoading ? 'Loading…' : unreadCount > 0 ? `${unreadCount} unread` : 'All caught up'}
             </h1>
           </div>

@@ -47,7 +47,7 @@ export function LiveSessionJoinPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Live class</p>
-          <h1 className="font-display text-xl font-semibold text-ink">
+          <h1 className="heading-section">
             {available ? available.className : 'No live class'}
           </h1>
         </div>
@@ -115,7 +115,7 @@ export function LiveSessionJoinPage() {
 
             {myMarks.length > 0 && (
               <section>
-                <h3 className="font-display text-base font-semibold text-ink mb-2">From your teacher</h3>
+                <h3 className="heading-subsection mb-2">From your teacher</h3>
                 <div className="flex flex-col gap-2">
                   {myMarks
                     .slice()

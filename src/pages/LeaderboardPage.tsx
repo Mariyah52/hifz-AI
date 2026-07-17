@@ -21,7 +21,7 @@ export function LeaderboardPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Leaderboard</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Ranked by XP</h1>
+          <h1 className="heading-section">Ranked by XP</h1>
         </div>
       </header>
 

@@ -53,7 +53,7 @@ export function LiveCoachSurahPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Live Coach</p>
-          <h1 className="font-display text-xl font-semibold text-ink">
+          <h1 className="heading-section">
             {surah.name}
           </h1>
         </div>
@@ -142,7 +142,7 @@ export function LiveCoachSurahPage() {
 
         {session.mistakes.length > 0 && (
           <section>
-            <h3 className="font-display text-base font-semibold text-ink mb-3">
+            <h3 className="heading-subsection mb-3">
               Mistakes ({session.mistakes.length})
             </h3>
             <div className="flex flex-col gap-2">

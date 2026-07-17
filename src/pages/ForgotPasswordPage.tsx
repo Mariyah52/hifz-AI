@@ -29,7 +29,7 @@ export function ForgotPasswordPage() {
     <div className="min-h-full bg-paper flex items-center justify-center px-5 py-12">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <h1 className="font-display text-2xl font-semibold text-ink">Reset your password</h1>
+          <h1 className="heading-page">Reset your password</h1>
           <p className="text-sm text-ink-soft font-body mt-1">
             Enter your account email and, if it exists, we'll send a reset link.
           </p>

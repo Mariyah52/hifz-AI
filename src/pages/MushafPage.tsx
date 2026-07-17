@@ -43,7 +43,7 @@ export function MushafPage() {
         </Link>
         <div className="flex-1">
           <p className="text-sm text-ink-soft font-body">Mushaf</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Page {pageNumber}</h1>
+          <h1 className="heading-section">Page {pageNumber}</h1>
         </div>
         <button
           onClick={() => setShowTajweed((v) => !v)}

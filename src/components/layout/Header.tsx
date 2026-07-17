@@ -24,7 +24,7 @@ export function Header({ greeting, name }: HeaderProps) {
         )}
         <div>
           <p className="text-sm text-ink-soft font-body">{greeting}</p>
-          <h1 className="font-display text-2xl font-semibold text-ink">{name}</h1>
+          <h1 className="heading-page">{name}</h1>
         </div>
       </div>
       <div className="flex items-center gap-2">

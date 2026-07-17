@@ -61,7 +61,7 @@ export function LiveSessionHostPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Teacher Portal</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Live class</h1>
+          <h1 className="heading-section">Live class</h1>
         </div>
       </header>
 
@@ -133,7 +133,7 @@ export function LiveSessionHostPage() {
             )}
 
             <section>
-              <h3 className="font-display text-base font-semibold text-ink mb-2 flex items-center gap-1.5">
+              <h3 className="heading-subsection mb-2 flex items-center gap-1.5">
                 <Users size={16} />
                 {live.peers.length} joined
               </h3>

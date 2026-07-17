@@ -30,13 +30,13 @@ export function ClassUpdatesPage() {
         </button>
         <div>
           <p className="text-sm text-ink-soft font-body">Communication</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Class updates</h1>
+          <h1 className="heading-section">Class updates</h1>
         </div>
       </header>
 
       <main className="px-5 mt-2 pb-4 flex flex-col gap-4">
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-2 flex items-center gap-1.5">
+          <h3 className="heading-subsection mb-2 flex items-center gap-1.5">
             <BookMarked size={16} />
             Homework
           </h3>
@@ -63,7 +63,7 @@ export function ClassUpdatesPage() {
         </section>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-2 flex items-center gap-1.5">
+          <h3 className="heading-subsection mb-2 flex items-center gap-1.5">
             <Megaphone size={16} />
             Announcements
           </h3>

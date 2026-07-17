@@ -58,7 +58,7 @@ export function AdminSettingsPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Admin</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Branding &amp; settings</h1>
+          <h1 className="heading-section">Branding &amp; settings</h1>
         </div>
       </header>
 

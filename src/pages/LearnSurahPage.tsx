@@ -67,7 +67,7 @@ export function LearnSurahPage() {
           </Link>
           <div>
             <p className="text-sm text-ink-soft font-body">Learn Mode</p>
-            <h1 className="font-display text-xl font-semibold text-ink">{surah.name}</h1>
+            <h1 className="heading-section">{surah.name}</h1>
           </div>
         </div>
         <div className="flex items-center gap-2">

@@ -28,7 +28,7 @@ export function RevisionPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Revision</p>
-          <h1 className="font-display text-xl font-semibold text-ink">
+          <h1 className="heading-section">
             {isLoading ? 'Loading…' : `${reviews?.length ?? 0} due`}
           </h1>
         </div>

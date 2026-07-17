@@ -38,7 +38,7 @@ export function ParentDashboardPage() {
         <header className="flex items-center justify-between gap-3 px-5 pt-6 pb-2">
           <div>
             <p className="text-sm text-ink-soft font-body">Parent Portal</p>
-            <h1 className="font-display text-xl font-semibold text-ink">No linked child yet</h1>
+            <h1 className="heading-section">No linked child yet</h1>
           </div>
           {headerActions}
         </header>
@@ -61,7 +61,7 @@ export function ParentDashboardPage() {
       <header className="flex items-center justify-between gap-3 px-5 pt-6 pb-2">
         <div>
           <p className="text-sm text-ink-soft font-body">Parent Portal</p>
-          <h1 className="font-display text-xl font-semibold text-ink">{overview.name}</h1>
+          <h1 className="heading-section">{overview.name}</h1>
         </div>
         {headerActions}
       </header>
@@ -108,7 +108,7 @@ export function ParentDashboardPage() {
         </div>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">This week's activity</h3>
+          <h3 className="heading-subsection mb-3">This week's activity</h3>
           <Card>
             <WeeklyActivityChart data={overview.progress.weeklyActivity} />
             <div className="flex items-center gap-4 mt-2 justify-center">
@@ -123,7 +123,7 @@ export function ParentDashboardPage() {
         </section>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Today's Sabaq</h3>
+          <h3 className="heading-subsection mb-3">Today's Sabaq</h3>
           {overview.todaysSabaq ? (
             <SabaqCard sabaq={overview.todaysSabaq} />
           ) : (
@@ -135,7 +135,7 @@ export function ParentDashboardPage() {
 
         {overview.recentSabaqs.length > 0 && (
           <section>
-            <h3 className="font-display text-base font-semibold text-ink mb-3">Recent Sabaqs</h3>
+            <h3 className="heading-subsection mb-3">Recent Sabaqs</h3>
             <div className="flex flex-col gap-2">
               {overview.recentSabaqs.map((s) => (
                 <SabaqCard key={s.id} sabaq={s} />
@@ -145,7 +145,7 @@ export function ParentDashboardPage() {
         )}
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Teacher comments</h3>
+          <h3 className="heading-subsection mb-3">Teacher comments</h3>
           {overview.feedback.length > 0 ? (
             <div className="flex flex-col gap-2">
               {overview.feedback.map((f) => (

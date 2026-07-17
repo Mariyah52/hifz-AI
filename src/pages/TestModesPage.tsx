@@ -16,7 +16,7 @@ export function TestModesPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Test Mode</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Advanced modes</h1>
+          <h1 className="heading-section">Advanced modes</h1>
         </div>
       </header>
 

@@ -46,7 +46,7 @@ export function MarketplacePage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Admin</p>
-          <h1 className="font-display text-xl font-semibold text-ink flex items-center gap-2">
+          <h1 className="heading-section flex items-center gap-2">
             <Store size={18} /> Marketplace
           </h1>
         </div>
@@ -65,7 +65,7 @@ export function MarketplacePage() {
 
         {CATEGORY_ORDER.filter((category) => grouped[category]?.length).map((category) => (
           <section key={category}>
-            <h3 className="font-display text-base font-semibold text-ink mb-3">{CATEGORY_LABELS[category]}</h3>
+            <h3 className="heading-subsection mb-3">{CATEGORY_LABELS[category]}</h3>
             <div className="flex flex-col gap-2">
               {grouped[category]!.map((item) => {
                 const isInstalled = installedItemIds.has(item.id);

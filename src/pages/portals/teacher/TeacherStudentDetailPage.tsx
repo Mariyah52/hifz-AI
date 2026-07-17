@@ -66,7 +66,7 @@ export function TeacherStudentDetailPage() {
           </Link>
           <div>
             <p className="text-sm text-ink-soft font-body">Teacher Portal</p>
-            <h1 className="font-display text-xl font-semibold text-ink">{detail.name}</h1>
+            <h1 className="heading-section">{detail.name}</h1>
           </div>
         </div>
         <button
@@ -98,7 +98,7 @@ export function TeacherStudentDetailPage() {
         </Card>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Assign new Sabaq</h3>
+          <h3 className="heading-subsection mb-3">Assign new Sabaq</h3>
           <Card>
             <AssignSabaqForm onAssign={handleAssign} />
           </Card>
@@ -106,7 +106,7 @@ export function TeacherStudentDetailPage() {
 
         {detail.recentTestSessions.length > 0 && (
           <section>
-            <h3 className="font-display text-base font-semibold text-ink mb-3">Recent test sessions</h3>
+            <h3 className="heading-subsection mb-3">Recent test sessions</h3>
             <div className="flex flex-col gap-2">
               {detail.recentTestSessions.map((s) => (
                 <TestHistoryCard key={s.id} session={s} />
@@ -117,7 +117,7 @@ export function TeacherStudentDetailPage() {
 
         {detail.recentPracticeAttempts.length > 0 && (
           <section>
-            <h3 className="font-display text-base font-semibold text-ink mb-3">Recent practice attempts</h3>
+            <h3 className="heading-subsection mb-3">Recent practice attempts</h3>
             <div className="flex flex-col gap-2">
               {detail.recentPracticeAttempts.map((a) => (
                 <AttemptHistoryCard key={a.id} attempt={a} />
@@ -127,12 +127,12 @@ export function TeacherStudentDetailPage() {
         )}
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Certificates</h3>
+          <h3 className="heading-subsection mb-3">Certificates</h3>
           <IssueCertificateForm studentId={studentId} onIssued={refresh} />
         </section>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Feedback</h3>
+          <h3 className="heading-subsection mb-3">Feedback</h3>
           <Card className="mb-3">
             <FeedbackForm onSubmit={handleFeedback} />
           </Card>

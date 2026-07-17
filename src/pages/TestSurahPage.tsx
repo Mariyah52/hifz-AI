@@ -66,7 +66,7 @@ export function TestSurahPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Test Mode</p>
-          <h1 className="font-display text-xl font-semibold text-ink">{surah.name}</h1>
+          <h1 className="heading-section">{surah.name}</h1>
         </div>
       </header>
 
@@ -110,7 +110,7 @@ export function TestSurahPage() {
 
             {sessions.length > 0 && (
               <section>
-                <h3 className="font-display text-base font-semibold text-ink mb-3">Previous tests</h3>
+                <h3 className="heading-subsection mb-3">Previous tests</h3>
                 <div className="flex flex-col gap-2">
                   {sessions.map((s) => (
                     <TestHistoryCard key={s.id} session={s} />

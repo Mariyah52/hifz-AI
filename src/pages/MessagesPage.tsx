@@ -28,7 +28,7 @@ export function MessagesPage() {
         </button>
         <div>
           <p className="text-sm text-ink-soft font-body">Communication</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Messages</h1>
+          <h1 className="heading-section">Messages</h1>
         </div>
       </header>
 

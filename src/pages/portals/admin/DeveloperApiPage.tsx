@@ -44,7 +44,7 @@ export function DeveloperApiPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Admin</p>
-          <h1 className="font-display text-xl font-semibold text-ink flex items-center gap-2">
+          <h1 className="heading-section flex items-center gap-2">
             <Code2 size={18} /> Developer API
           </h1>
         </div>
@@ -104,7 +104,7 @@ export function DeveloperApiPage() {
         </Card>
 
         <section>
-          <h3 className="font-display text-base font-semibold text-ink mb-3">Active keys</h3>
+          <h3 className="heading-subsection mb-3">Active keys</h3>
           {isLoading && <p className="text-center text-ink-soft font-body text-sm py-4">Loading…</p>}
           {!isLoading && keys.length === 0 && (
             <Card>

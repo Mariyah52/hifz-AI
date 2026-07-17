@@ -34,7 +34,7 @@ export function NotesPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Notes</p>
-          <h1 className="font-display text-xl font-semibold text-ink">{notes.length} saved</h1>
+          <h1 className="heading-section">{notes.length} saved</h1>
         </div>
       </header>
 

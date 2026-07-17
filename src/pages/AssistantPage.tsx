@@ -64,7 +64,7 @@ export function AssistantPage() {
         </button>
         <div>
           <p className="text-sm text-ink-soft font-body">Your tutor</p>
-          <h1 className="font-display text-xl font-semibold text-ink flex items-center gap-1.5">
+          <h1 className="heading-section flex items-center gap-1.5">
             <Sparkles size={16} className="text-teal-dark" />
             HifzAI Assistant
           </h1>

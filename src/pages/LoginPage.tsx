@@ -57,7 +57,7 @@ export function LoginPage() {
     <div className="min-h-full bg-paper flex items-center justify-center px-5 py-12">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <h1 className="font-display text-2xl font-semibold text-ink">HifzAI</h1>
+          <h1 className="heading-page">HifzAI</h1>
           <p className="text-sm text-ink-soft font-body mt-1">
             {mode === 'login' ? 'Log in to continue your Hifz journey.' : 'Create an account to get started.'}
           </p>

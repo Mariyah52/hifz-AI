@@ -42,7 +42,7 @@ export function ResetPasswordPage() {
     <div className="min-h-full bg-paper flex items-center justify-center px-5 py-12">
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
-          <h1 className="font-display text-2xl font-semibold text-ink">Set a new password</h1>
+          <h1 className="heading-page">Set a new password</h1>
         </div>
 
         <Card>

@@ -34,7 +34,7 @@ export function CertificatesPage() {
         </Link>
         <div>
           <p className="text-sm text-ink-soft font-body">Progress</p>
-          <h1 className="font-display text-xl font-semibold text-ink">Certificates</h1>
+          <h1 className="heading-section">Certificates</h1>
         </div>
       </header>
 
