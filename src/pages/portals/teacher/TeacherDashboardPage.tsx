@@ -1,35 +1,19 @@
-import { LogOut, Radio, ChevronRight, MessageCircle, Megaphone } from 'lucide-react';
+import { Radio, ChevronRight, MessageCircle, Megaphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import { StudentCard } from '@/components/teacher/StudentCard';
-import { NotificationBellButton } from '@/components/shared/NotificationBellButton';
+import { OrganizationBanner } from '@/components/layout/OrganizationBanner';
 import { useTeacherRoster } from '@/hooks/useTeacherRoster';
-import { useAuth } from '@/hooks/useAuth';
 
 export function TeacherDashboardPage() {
   const { roster, isLoading } = useTeacherRoster();
-  const { logout } = useAuth();
 
   return (
     <>
-      <header className="flex items-center justify-between gap-3 px-5 pt-6 pb-2">
-        <div>
-          <p className="text-sm text-ink-soft font-body">Teacher Portal</p>
-          <h1 className="heading-section">
-            {isLoading ? 'Loading…' : `${roster.length} students`}
-          </h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <NotificationBellButton sizeClass="h-9 w-9" />
-          <button
-            aria-label="Log out"
-            onClick={logout}
-            className="grid h-9 w-9 place-items-center rounded-full bg-sage text-ink-soft hover:bg-[#d8dfcd] transition-colors"
-          >
-            <LogOut size={18} />
-          </button>
-        </div>
-      </header>
+      <OrganizationBanner
+        roleLabel="Teacher"
+        subtitle={isLoading ? 'Loading\u2026' : `${roster.length} students`}
+      />
 
       <main className="px-5 mt-2 pb-4">
         <Link

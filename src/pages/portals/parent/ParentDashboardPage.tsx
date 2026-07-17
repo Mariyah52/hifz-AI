@@ -1,4 +1,4 @@
-import { LogOut, MessageCircle, Megaphone } from 'lucide-react';
+import { MessageCircle, Megaphone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import { ProgressRing } from '@/components/ui/ProgressRing';
@@ -7,26 +7,12 @@ import { SabaqCard } from '@/components/dashboard/SabaqCard';
 import { StatTile } from '@/components/progress/StatTile';
 import { WeeklyActivityChart } from '@/components/progress/WeeklyActivityChart';
 import { FeedbackItem } from '@/components/teacher/FeedbackItem';
-import { NotificationBellButton } from '@/components/shared/NotificationBellButton';
+import { OrganizationBanner } from '@/components/layout/OrganizationBanner';
 import { useChildOverview } from '@/hooks/useChildOverview';
-import { useAuth } from '@/hooks/useAuth';
 
 export function ParentDashboardPage() {
   const { overview, isLoading } = useChildOverview();
-  const { logout } = useAuth();
 
-  const headerActions = (
-    <div className="flex items-center gap-2">
-      <NotificationBellButton sizeClass="h-9 w-9" />
-      <button
-        aria-label="Log out"
-        onClick={logout}
-        className="grid h-9 w-9 place-items-center rounded-full bg-sage text-ink-soft hover:bg-[#d8dfcd] transition-colors"
-      >
-        <LogOut size={18} />
-      </button>
-    </div>
-  );
 
   if (isLoading) {
     return <div className="p-5 text-ink-soft font-body text-sm">Loading…</div>;
@@ -35,13 +21,7 @@ export function ParentDashboardPage() {
   if (!overview) {
     return (
       <>
-        <header className="flex items-center justify-between gap-3 px-5 pt-6 pb-2">
-          <div>
-            <p className="text-sm text-ink-soft font-body">Parent Portal</p>
-            <h1 className="heading-section">No linked child yet</h1>
-          </div>
-          {headerActions}
-        </header>
+        <OrganizationBanner roleLabel="Parent" subtitle="No linked child yet" />
         <main className="px-5 mt-2 pb-4">
           <Card>
             <p className="font-body text-sm text-ink-soft">
@@ -58,13 +38,7 @@ export function ParentDashboardPage() {
 
   return (
     <>
-      <header className="flex items-center justify-between gap-3 px-5 pt-6 pb-2">
-        <div>
-          <p className="text-sm text-ink-soft font-body">Parent Portal</p>
-          <h1 className="heading-section">{overview.name}</h1>
-        </div>
-        {headerActions}
-      </header>
+      <OrganizationBanner roleLabel="Parent" subtitle={overview.name} />
 
       <main className="px-5 flex flex-col gap-5 mt-2 pb-4">
         <div className="grid grid-cols-2 gap-2">

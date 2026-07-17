@@ -5,6 +5,8 @@ import { NotificationBellButton } from '@/components/shared/NotificationBellButt
 
 interface OrganizationBannerProps {
   roleLabel: string;
+  /** Overrides the org's generic welcomeMessage with something personal (e.g. "Good morning, Ahmad"). Falls back to welcomeMessage when omitted. */
+  subtitle?: string;
 }
 
 /**
@@ -31,7 +33,7 @@ const LATTICE_SVG = `data:image/svg+xml,${encodeURIComponent(`
   </svg>
 `)}`;
 
-export function OrganizationBanner({ roleLabel }: OrganizationBannerProps) {
+export function OrganizationBanner({ roleLabel, subtitle }: OrganizationBannerProps) {
   const { logout } = useAuth();
   const { data: branding } = useOrganizationBranding();
 
@@ -61,8 +63,10 @@ export function OrganizationBanner({ roleLabel }: OrganizationBannerProps) {
           <div>
             <p className="text-[11px] uppercase tracking-widest text-gold font-mono">{roleLabel}</p>
             <h1 className="font-display text-2xl font-semibold text-paper">{orgName}</h1>
-            {branding?.welcomeMessage && (
-              <p className="text-paper/70 text-xs font-body mt-0.5 max-w-sm">{branding.welcomeMessage}</p>
+            {(subtitle ?? branding?.welcomeMessage) && (
+              <p className="text-paper/70 text-xs font-body mt-0.5 max-w-sm">
+                {subtitle ?? branding?.welcomeMessage}
+              </p>
             )}
           </div>
         </div>

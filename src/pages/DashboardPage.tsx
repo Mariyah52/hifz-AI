@@ -1,4 +1,4 @@
-import { Header } from '@/components/layout/Header';
+import { OrganizationBanner } from '@/components/layout/OrganizationBanner';
 import { ContinueCTA } from '@/components/dashboard/ContinueCTA';
 import { StreakBadge } from '@/components/dashboard/StreakBadge';
 import { SabaqCard } from '@/components/dashboard/SabaqCard';
@@ -66,7 +66,7 @@ function DashboardContent({
 
   return (
     <>
-      <Header greeting={greetingForNow()} name={name} />
+      <OrganizationBanner roleLabel="Student" subtitle={`${greetingForNow()}, ${name}`} />
 
       <main className="px-5 flex flex-col gap-5 mt-2">
         {todaysSabaq && <ContinueCTA sabaq={todaysSabaq} />}
