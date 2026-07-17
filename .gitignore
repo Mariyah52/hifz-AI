@@ -3,3 +3,5 @@ backend/.venv/
 backend/.env
 node_modules/
 __pycache__/
+dist/
+tsconfig.tsbuildinfo

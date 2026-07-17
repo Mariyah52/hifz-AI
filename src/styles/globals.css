@@ -1,9 +1,8 @@
+@import './tokens.css';
+@import './animations.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import './tokens.css';
-@import './animations.css';
 
 html,
 body,
@@ -16,6 +15,35 @@ body {
   color: var(--color-ink);
   font-family: 'Inter', ui-sans-serif, sans-serif;
   -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+}
+
+/* Fraunces ships extra care in its ligatures/kerning — worth turning on
+   explicitly rather than leaving it to browser defaults, since headings
+   are this app's most visible typographic moment (page titles, org name
+   in the banner, dashboard section headers). */
+.font-display {
+  font-feature-settings: 'liga' 1, 'kern' 1;
+  letter-spacing: -0.01em;
+}
+
+/* Reusable heading scale — most pages hand-roll their own combination of
+   font-display/text-size/font-weight/text-ink ad hoc; centralizing the
+   three sizes actually in use keeps new pages consistent with existing
+   ones instead of drifting. Existing pages aren't retrofitted to these
+   yet (a larger, separate pass), but new/redesigned pages should reach
+   for these first. */
+@layer components {
+  .heading-page {
+    @apply font-display text-2xl font-semibold text-ink;
+  }
+  .heading-section {
+    @apply font-display text-xl font-semibold text-ink;
+  }
+  .heading-subsection {
+    @apply font-display text-base font-semibold text-ink;
+  }
 }
 
 /* Visible keyboard focus everywhere */

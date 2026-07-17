@@ -7,18 +7,18 @@ import {
 } from '@/utils/tajweed';
 
 describe('isParseableTajweedText', () => {
-  it('returns true when the sample ayah contains a <tajweed> tag', () => {
-    const ayahs = [{ text: 'بِسْمِ <tajweed class="ham_wasl">اللَّهِ</tajweed>' }];
+  it('returns true when the sample ayah contains the API\'s real raw notation', () => {
+    const ayahs = [{ text: 'بِسْمِ [h:9421[اَلَّهُ]' }];
     expect(isParseableTajweedText(ayahs)).toBe(true);
   });
 
   it('returns false for plain text with no tajweed markup', () => {
-    const ayahs = [{ text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' }];
+    const ayahs = [{ text: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحيمِ' }];
     expect(isParseableTajweedText(ayahs)).toBe(false);
   });
 
-  it('returns false for the raw shorthand notation this app does not trust ([h:9421[...])', () => {
-    const ayahs = [{ text: '[h:9421[بِسْمِ اللَّهِ' }];
+  it('returns false for the HTML tag format this app previously (wrongly) assumed the API used', () => {
+    const ayahs = [{ text: 'بِسْمِ <tajweed class="ham_wasl">اللَّهِ</tajweed>' }];
     expect(isParseableTajweedText(ayahs)).toBe(false);
   });
 
@@ -27,15 +27,15 @@ describe('isParseableTajweedText', () => {
   });
 
   it('skips leading empty ayahs to find the first non-empty sample', () => {
-    const ayahs = [{ text: '' }, { text: '<tajweed class="ghunnah">نّ</tajweed>' }];
+    const ayahs = [{ text: '' }, { text: '[g[نَّ]' }];
     expect(isParseableTajweedText(ayahs)).toBe(true);
   });
 });
 
 describe('stripTajweedTags', () => {
-  it('removes tags and keeps only the inner text', () => {
-    const input = 'بِسْمِ <tajweed class="ham_wasl">اللَّهِ</tajweed> الرَّحْمَٰنِ';
-    expect(stripTajweedTags(input)).toBe('بِسْمِ اللَّهِ الرَّحْمَٰنِ');
+  it('removes raw notation and keeps only the inner content', () => {
+    const input = 'بِسْمِ [h:9421[اَلَّهِ] الرَّحْمَٰنِ';
+    expect(stripTajweedTags(input)).toBe('بِسْمِ اَلَّهِ الرَّحْمَٰنِ');
   });
 
   it('returns plain text unchanged when there is no markup', () => {
@@ -43,43 +43,44 @@ describe('stripTajweedTags', () => {
     expect(stripTajweedTags(input)).toBe(input);
   });
 
-  it('handles multiple tags in one string', () => {
-    const input = '<tajweed class="ghunnah">أ</tajweed>ب<tajweed class="qalqalah">ج</tajweed>';
+  it('handles multiple spans in one string', () => {
+    const input = '[g[أ]ب[q[ج]';
     expect(stripTajweedTags(input)).toBe('أبج');
   });
 });
 
 describe('parseTajweedSegments', () => {
   it('splits plain and colored runs in order', () => {
-    const input = 'بِسْمِ <tajweed class="ham_wasl">اللَّهِ</tajweed> الرَّحْمَٰنِ';
+    const input = 'بِسْمِ [h:9421[اَلَّهِ] الرَّحْمَٰنِ';
     const segments = parseTajweedSegments(input);
 
     expect(segments).toHaveLength(3);
     expect(segments[0]).toEqual({ text: 'بِسْمِ ', color: null, ruleName: null });
-    expect(segments[1]).toEqual({ text: 'اللَّهِ', color: '#AAAAAA', ruleName: 'Hamzat ul Wasl' });
+    expect(segments[1]).toEqual({ text: 'اَلَّهِ', color: '#AAAAAA', ruleName: 'Hamzat ul Wasl' });
     expect(segments[2]).toEqual({ text: ' الرَّحْمَٰنِ', color: null, ruleName: null });
   });
 
-  it('resolves aliased rule class names to the same color', () => {
-    const idghamGhunnah = parseTajweedSegments('<tajweed class="idgham_ghunnah">نّ</tajweed>');
-    const idghamWithGhunnah = parseTajweedSegments('<tajweed class="idgham_with_ghunnah">نّ</tajweed>');
-    expect(idghamGhunnah[0].color).toBe(idghamWithGhunnah[0].color);
-    expect(idghamGhunnah[0].ruleName).toBe(idghamWithGhunnah[0].ruleName);
+  it('resolves every documented raw letter code to a real, colored rule', () => {
+    const codes = ['h', 's', 'l', 'n', 'p', 'm', 'q', 'o', 'c', 'f', 'w', 'i', 'a', 'u', 'd', 'b', 'g'];
+    for (const code of codes) {
+      const segments = parseTajweedSegments(`[${code}[ن]`);
+      expect(segments[0].color, `code "${code}" should resolve to a color`).not.toBeNull();
+    }
   });
 
-  it('renders an unrecognized rule class as uncolored rather than guessing', () => {
-    const segments = parseTajweedSegments('<tajweed class="totally_made_up_rule">نّ</tajweed>');
+  it('renders an unrecognized letter code as uncolored rather than guessing', () => {
+    const segments = parseTajweedSegments('[z[نَّ]');
     expect(segments[0].color).toBeNull();
     expect(segments[0].ruleName).toBeNull();
   });
 
-  it('returns a single plain segment for text with no tags', () => {
+  it('returns a single plain segment for text with no raw spans', () => {
     const segments = parseTajweedSegments('بِسْمِ اللَّهِ');
     expect(segments).toEqual([{ text: 'بِسْمِ اللَّهِ', color: null, ruleName: null }]);
   });
 
   it('is safe to call repeatedly (regex lastIndex does not leak state across calls)', () => {
-    const input = '<tajweed class="ghunnah">نّ</tajweed>';
+    const input = '[g[نَّ]';
     const first = parseTajweedSegments(input);
     const second = parseTajweedSegments(input);
     expect(first).toEqual(second);
@@ -94,7 +95,7 @@ describe('getTajweedLegend', () => {
     expect(keys.length).toBe(uniqueKeys.size);
   });
 
-  it('includes Qalqalah exactly once despite two aliased spellings in the source map', () => {
+  it('includes Qalqalah exactly once despite aliased spellings in the source map', () => {
     const legend = getTajweedLegend();
     const qalqalahEntries = legend.filter((r) => r.name === 'Qalqalah');
     expect(qalqalahEntries).toHaveLength(1);

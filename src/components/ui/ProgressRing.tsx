@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react';
+
 interface ProgressRingProps {
   /** 0-100 */
   value: number;
@@ -71,9 +73,14 @@ export function ProgressRing({
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           transform={`rotate(-90 ${center} ${center})`}
-          style={{
-            transition: 'stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-          }}
+          className="animate-ring-draw"
+          style={
+            {
+              transition: 'stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+              '--ring-circumference': circumference,
+              '--ring-offset': offset,
+            } as CSSProperties
+          }
         />
       </svg>
       <div className="flex flex-col items-center justify-center text-center">
