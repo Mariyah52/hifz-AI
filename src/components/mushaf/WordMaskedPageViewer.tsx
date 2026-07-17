@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { toArabicNumerals } from '@/utils/arabicNumerals';
 import { mulberry32 } from '@/utils/seededRandom';
+import { splitBismillah } from '@/utils/bismillah';
 import type { MushafPageAyah } from '@/types/quran';
 
 export type HideLevel = 'word' | 'line' | 'multiLine' | 'halfPage' | 'fullPage';
@@ -30,17 +31,53 @@ interface WordMaskedPageViewerProps {
  * technique — words that visually wrap together right now get hidden
  * together — just not tied to one canonical page layout, and it will
  * regroup differently on a different screen width.
+ *
+ * Bismillah handling mirrors MushafPageViewer's: the source API bakes the
+ * Bismillah into ayah 1's text for every surah except At-Tawbah (9), so
+ * without splitting it out here it would silently join the maskable word
+ * pool — masked/revealed like ordinary ayah content instead of sitting
+ * apart as its own unmasked heading line above the surah body.
  */
 export function WordMaskedPageViewer({ ayahs, hideLevel, maskSeed }: WordMaskedPageViewerProps) {
+  // Strip Bismillah off each surah-opening ayah on this page (display
+  // only — mirrors MushafPageViewer) so the word pool below never
+  // includes it. Keyed by surahNumber: a page's ayahs are already
+  // partitioned into consecutive per-surah runs, so at most one
+  // Bismillah opening exists per surah per page.
+  const { displayAyahs, bismillahBySurah } = useMemo(() => {
+    const bismillahMap = new Map<number, string>();
+    const result: MushafPageAyah[] = [];
+    let lastSurah: number | null = null;
+
+    ayahs.forEach((ayah) => {
+      const isFirstOfGroup = ayah.surahNumber !== lastSurah;
+      lastSurah = ayah.surahNumber;
+      const opensWithBismillah = isFirstOfGroup && ayah.ayahNumber === 1 && ayah.surahNumber !== 9;
+
+      if (!opensWithBismillah) {
+        result.push(ayah);
+        return;
+      }
+
+      const { bismillah, rest } = splitBismillah(ayah.text);
+      if (bismillah) bismillahMap.set(ayah.surahNumber, bismillah);
+      if (rest.trim().length > 0) result.push({ ...ayah, text: rest });
+      // else: ayah 1 was entirely the Bismillah (Al-Fatiha) — dropped from
+      // the body since there's no remaining ayah text to show/mask.
+    });
+
+    return { displayAyahs: result, bismillahBySurah: bismillahMap };
+  }, [ayahs]);
+
   const words = useMemo<WordToken[]>(() => {
     const list: WordToken[] = [];
-    ayahs.forEach((ayah) => {
+    displayAyahs.forEach((ayah) => {
       ayah.text.split(' ').forEach((w, i) => {
         if (w) list.push({ id: `${ayah.surahNumber}-${ayah.ayahNumber}-${i}`, text: w, surahNumber: ayah.surahNumber, ayahNumber: ayah.ayahNumber });
       });
     });
     return list;
-  }, [ayahs]);
+  }, [displayAyahs]);
 
   const wordRefs = useRef<Map<string, HTMLSpanElement>>(new Map());
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -68,7 +105,7 @@ export function WordMaskedPageViewer({ ayahs, hideLevel, maskSeed }: WordMaskedP
     // gating them behind `lineByWord` (only actually needed by "line" and
     // "multiLine") meant that if the ResizeObserver measurement pass ever
     // ran late or came back empty, masking silently did nothing at all,
-    // even in the default "word" mode. Each branch below now only
+    // even in the default "word" mode. Each branch below only
     // requires the data it actually uses.
     if (words.length === 0) return new Set<string>();
     const rng = mulberry32(maskSeed);
@@ -104,7 +141,7 @@ export function WordMaskedPageViewer({ ayahs, hideLevel, maskSeed }: WordMaskedP
   }
 
   const groups: { surahNumber: number; ayahs: MushafPageAyah[] }[] = [];
-  for (const ayah of ayahs) {
+  for (const ayah of displayAyahs) {
     const last = groups[groups.length - 1];
     if (last && last.surahNumber === ayah.surahNumber) last.ayahs.push(ayah);
     else groups.push({ surahNumber: ayah.surahNumber, ayahs: [ayah] });
@@ -112,54 +149,60 @@ export function WordMaskedPageViewer({ ayahs, hideLevel, maskSeed }: WordMaskedP
 
   return (
     <div ref={containerRef} className="rounded-card bg-paper border border-ink/[0.06] shadow-folio p-5 flex flex-col gap-4">
-      {groups.map((group) => (
-        <div key={`${group.surahNumber}-${group.ayahs[0].ayahNumber}`}>
-          {(groups.length > 1 || group.ayahs[0].ayahNumber === 1) && (
-            <p className="text-center font-mono text-[11px] uppercase tracking-widest text-ink-soft mb-2">
-              Surah {group.ayahs[0].surahName}
-            </p>
-          )}
-          <div dir="rtl" className="font-arabic text-2xl leading-[2.6] text-ink text-justify [text-align-last:center]">
-            {group.ayahs.map((ayah) => (
-              <span key={ayah.ayahNumber}>
-                {ayah.text.split(' ').map((text, i) => {
-                  if (!text) return null;
-                  const id = `${ayah.surahNumber}-${ayah.ayahNumber}-${i}`;
-                  const isMasked = maskedIds.has(id) && !revealedIds.has(id);
-                  return (
-                    <span
-                      key={id}
-                      ref={(el) => {
-                        if (el) wordRefs.current.set(id, el);
-                        else wordRefs.current.delete(id);
-                      }}
-                      onClick={() => isMasked && revealWord(id)}
-                      className={isMasked ? 'cursor-pointer select-none blur-sm hover:blur-[3px] transition-all' : undefined}
-                    >
-                      {text}{' '}
-                    </span>
-                  );
-                })}
-                <span
-                  className="inline-flex items-center justify-center mx-1 h-6 w-6 rounded-full border border-gold/50
-                    text-[11px] font-arabic text-gold align-middle"
-                  aria-hidden
-                >
-                  {toArabicNumerals(ayah.ayahNumber)}
-                </span>
-                {ayah.isSajda && (
+      {groups.map((group) => {
+        const bismillah = bismillahBySurah.get(group.surahNumber);
+        return (
+          <div key={`${group.surahNumber}-${group.ayahs[0].ayahNumber}`}>
+            {(groups.length > 1 || group.ayahs[0].ayahNumber === 1) && (
+              <p className="text-center font-mono text-[11px] uppercase tracking-widest text-ink-soft mb-2">
+                Surah {group.ayahs[0].surahName}
+              </p>
+            )}
+            {bismillah && (
+              <p className="text-center font-arabic text-2xl text-ink mb-2">{bismillah}</p>
+            )}
+            <div dir="rtl" className="font-arabic text-2xl leading-[2.6] text-ink text-justify [text-align-last:center]">
+              {group.ayahs.map((ayah) => (
+                <span key={ayah.ayahNumber}>
+                  {ayah.text.split(' ').map((text, i) => {
+                    if (!text) return null;
+                    const id = `${ayah.surahNumber}-${ayah.ayahNumber}-${i}`;
+                    const isMasked = maskedIds.has(id) && !revealedIds.has(id);
+                    return (
+                      <span
+                        key={id}
+                        ref={(el) => {
+                          if (el) wordRefs.current.set(id, el);
+                          else wordRefs.current.delete(id);
+                        }}
+                        onClick={() => isMasked && revealWord(id)}
+                        className={isMasked ? 'cursor-pointer select-none blur-sm hover:blur-[3px] transition-all' : undefined}
+                      >
+                        {text}{' '}
+                      </span>
+                    );
+                  })}
                   <span
-                    className="inline-flex items-center justify-center mx-0.5 h-5 px-1.5 rounded-full bg-maroon/10
-                      text-[10px] font-mono text-maroon align-middle"
+                    className="inline-flex items-center justify-center mx-1 h-6 w-6 rounded-full border border-gold/50
+                      text-[11px] font-arabic text-gold align-middle"
+                    aria-hidden
                   >
-                    سجدة
+                    {toArabicNumerals(ayah.ayahNumber)}
                   </span>
-                )}
-              </span>
-            ))}
+                  {ayah.isSajda && (
+                    <span
+                      className="inline-flex items-center justify-center mx-0.5 h-5 px-1.5 rounded-full bg-maroon/10
+                        text-[10px] font-mono text-maroon align-middle"
+                    >
+                      سجدة
+                    </span>
+                  )}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

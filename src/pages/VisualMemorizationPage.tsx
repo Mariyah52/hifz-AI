@@ -16,7 +16,10 @@ export function VisualMemorizationPage() {
     useMushafPage(requestedPage);
 
   const [hideLevel, setHideLevel] = useState<HideLevel>('word');
-  const [maskSeed, setMaskSeed] = useState(1);
+  // Random on every mount (fresh page load / navigation), not a fixed
+  // literal — otherwise mulberry32(seed) deterministically masks the same
+  // word every single time until the user manually taps "New mask".
+  const [maskSeed, setMaskSeed] = useState(() => Math.floor(Math.random() * 1_000_000));
 
   function syncRoute(page: number) {
     navigate(`/memorize/${page}`, { replace: true });
