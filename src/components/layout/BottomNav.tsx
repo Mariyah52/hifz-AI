@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { BookOpen, LayoutGrid, Mic, ListChecks, TrendingUp } from 'lucide-react';
+import { BookOpen, LayoutGrid, Mic, ListChecks, TrendingUp, Radio } from 'lucide-react';
 
 const items = [
   { to: '/', label: 'Dashboard', icon: LayoutGrid, end: true },
   { to: '/learn', label: 'Learn', icon: BookOpen },
   { to: '/practice', label: 'Practice', icon: Mic },
+  { to: '/live-coach', label: 'Live', icon: Radio },
   { to: '/test', label: 'Test', icon: ListChecks },
   { to: '/progress', label: 'Progress', icon: TrendingUp },
 ];
@@ -16,7 +17,7 @@ export function BottomNav() {
         pb-[env(safe-area-inset-bottom)]"
       aria-label="Primary"
     >
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-6">
         {items.map(({ to, label, icon: Icon, end }) => (
           <li key={to}>
             <NavLink
